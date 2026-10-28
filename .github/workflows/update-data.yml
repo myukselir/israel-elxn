@@ -1,5 +1,5 @@
 ---
-name: Update Fire Stats CSV
+name: Update chart data
 concurrency:
   group: fire-stats
   cancel-in-progress: false
