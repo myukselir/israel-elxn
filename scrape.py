@@ -79,7 +79,7 @@ csv_data = csv_buffer.getvalue()
 # FOR CHART UPDATE
 API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
-CHART_ID = "tymgc"
+CHART_ID = "J9CR1"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 print("TOKEN present:", bool(API_TOKEN))
 print("TOKEN length:", len(API_TOKEN) if API_TOKEN else 0)
