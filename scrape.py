@@ -72,7 +72,7 @@ party_lookup = {
     for row in results
 }
 
-rows = []
+rows = ["who","percent"]
 
 for bloc_name, parties in blocs.items():
 
@@ -119,7 +119,7 @@ payload = {
     "metadata": {
         "describe": {
             "intro": intro
-        }
+        },
         "annotate": {
             "notes": footnote
         }
