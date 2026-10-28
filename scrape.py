@@ -97,7 +97,7 @@ csv_data = csv_buffer.getvalue()
 # FOR CHART UPDATE
 API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
-CHART_ID = "J9CR1"
+CHART_ID = "tymgc"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
 # UPDATE DATA
