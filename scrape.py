@@ -122,6 +122,7 @@ payload = {
         }
         "annotate": {
             "notes": footnote
+        }
     }
 }
 
