@@ -40,9 +40,6 @@ intro = (
     f"as of {dt.strftime('%b. %-d, %-I:%M %p').replace('AM','a.m.').replace('PM','p.m.')} GMT"
 )
 
-print(vote_count_text)
-print(status_text)
-
 # Party order and display names for the CSV
 blocs = {
     "Netanyahu-led bloc": [
