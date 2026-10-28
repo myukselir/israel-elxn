@@ -20,9 +20,9 @@ response.raise_for_status()
 
 data = response.json()
 results = data["ElectionResults"]
-timestamp = data["Timestamp"]["timestamp"]
-total_votes = data["VotesCounted"]["total_votes"]
-votes_counted = data["VotesCounted"]["votes_counted"]
+timestamp = data["Timestamp"][0]["timestamp"]
+total_votes = data["VotesCounted"][0]["total_votes"]
+votes_counted = data["VotesCounted"][0]["votes_counted"]
 votes_percentage = votes_counted/total_votes*100
 
 # Parse timestamp
