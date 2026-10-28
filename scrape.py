@@ -28,13 +28,11 @@ votes_percentage = votes_counted/total_votes*100
 # Parse timestamp
 dt = datetime.strptime(timestamp, "%m/%d/%Y %H:%M:%S")
 
-# String 1
 footnote = (
     f"{votes_counted:,} votes counted of "
     f"{total_votes:,} total votes cast."
 )
 
-# String 2
 intro = (
     f"{votes_percentage:.1f}% of votes counted, "
     f"as of {dt.strftime('%b. %-d, %-I:%M %p').replace('AM','a.m.').replace('PM','p.m.')} GMT"
