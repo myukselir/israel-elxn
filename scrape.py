@@ -67,7 +67,7 @@ party_lookup = {
     for row in results
 }
 
-rows = ["who","percent"]
+rows = [["who","percent"]]
 
 for bloc_name, parties in blocs.items():
 
