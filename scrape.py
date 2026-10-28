@@ -2,6 +2,7 @@ from io import StringIO
 import csv
 import requests
 import os
+from datetime import datetime
 
 # Download JSON directly from Reuters
 url = "https://graphics.thomsonreuters.com/israel-election-results-2026/data.json"
@@ -19,6 +20,28 @@ response.raise_for_status()
 
 data = response.json()
 results = data["ElectionResults"]
+timestamp = data["Timestamp"]["timestamp"]
+total_votes = data["VotesCounted"]["total_votes"]
+votes_counted = data["VotesCounted"]["votes_counted"]
+votes_percentage = votes_counted/total_votes*100
+
+# Parse timestamp
+dt = datetime.strptime(timestamp, "%m/%d/%Y %H:%M:%S")
+
+# String 1
+footnote = (
+    f"{votes_counted:,} votes counted of "
+    f"{total_votes:,} total votes cast."
+)
+
+# String 2
+intro = (
+    f"{votes_percentage:.1f}% of votes counted, "
+    f"as of {dt.strftime('%b. %-d, %-I:%M %p').replace('AM','a.m.').replace('PM','p.m.')} GMT"
+)
+
+print(vote_count_text)
+print(status_text)
 
 # Party order and display names for the CSV
 blocs = {
@@ -81,11 +104,6 @@ API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
 CHART_ID = "J9CR1"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
-print("TOKEN present:", bool(API_TOKEN))
-print("TOKEN length:", len(API_TOKEN) if API_TOKEN else 0)
-print(f"{URL_BASE}charts/{CHART_ID}/data")
-print("Uploading CSV...")
-print(csv_data)
 
 # UPDATE DATA
 response = requests.put(
@@ -94,18 +112,16 @@ response = requests.put(
     data=csv_data.encode("utf-8")
 )
 
-print("Status:", response.status_code)
-print("Response:", response.text)
-
 response.raise_for_status()
 
 # UPDATE TITLE AND TIMESTAMP
 payload = {
-    "title": f"Title",
     "metadata": {
         "describe": {
-            "intro": f"Intro",
+            "intro": intro
         }
+        "annotate": {
+            "notes": footnote
     }
 }
 
