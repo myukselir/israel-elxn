@@ -81,7 +81,8 @@ API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
 CHART_ID = "tymgc"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
-
+print("TOKEN present:", bool(API_TOKEN))
+print("TOKEN length:", len(API_TOKEN) if API_TOKEN else 0)
 print(f"{URL_BASE}charts/{CHART_ID}/data")
 print("Uploading CSV...")
 print(csv_data)
