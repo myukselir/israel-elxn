@@ -81,13 +81,20 @@ API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
 CHART_ID = "tymgc"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
+
 print(f"{URL_BASE}charts/{CHART_ID}/data")
+print("Uploading CSV...")
+print(csv_data)
+
 # UPDATE DATA
 response = requests.put(
     f"{URL_BASE}charts/{CHART_ID}/data",
     headers=HEADERS,
     data=csv_data.encode("utf-8")
 )
+
+print("Status:", response.status_code)
+print("Response:", response.text)
 
 response.raise_for_status()
 
