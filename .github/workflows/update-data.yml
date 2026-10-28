@@ -28,4 +28,4 @@ jobs:
         env:
           URL_BASE: ${{secrets.URL_BASE}}
           TOKEN: ${{ secrets.TOKEN }}
-        run: python scrape.py & python scrape-by-agency.py & wait
+        run: python scrape.py & wait
