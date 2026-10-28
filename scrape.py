@@ -1,5 +1,7 @@
-import requests
+from io import StringIO
 import csv
+import requests
+import os
 
 # Download JSON directly from Reuters
 url = "https://graphics.thomsonreuters.com/israel-election-results-2026/data.json"
