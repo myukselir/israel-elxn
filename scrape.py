@@ -1,83 +1,83 @@
-
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
-from io import StringIO
-import csv
 import requests
-import os
+import csv
 
-# GET TODAY'S DATE FOR URL
-url_date = date.today().strftime("%Y-%m-%d")
+# Download JSON directly from Reuters
+url = "https://graphics.thomsonreuters.com/israel-election-results-2026/data.json"
 
-# DO TIMESTAMP FOR CHART
-dt = datetime.now(ZoneInfo("America/Toronto"))
-timestamp = (
-    dt.strftime("%B %d, %Y, %I:%M %p")
-      .replace("AM", "a.m.")
-      .replace("PM", "p.m.")
-      .replace(" 0", " ")
-)
+headers = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/130.0 Safari/537.36"
+    )
+}
 
-timestamp += " ET"
-
-# DATA URL
-url = (
-    "https://api.cwfif.nrcan.gc.ca/reported-fire-stats/ytd/by-response-type"
-    "?group_by_stage_of_control=true"
-    "&group_by_status=true"
-    f"&date={url_date}"
-)
-
-def do_string(text):
-    return text.replace("_", " ").capitalize()
-
-#FETCH DATA 
-
-response = requests.get(url, timeout=30)
+response = requests.get(url, headers=headers)
 response.raise_for_status()
-data = response.json()[0]
-area_data = data["area_burned"]["response_type"]
-count_data = data["fire_count"]["response_type"]
 
-# BUILD CSV
-rows = [[
-    "Status",
-    "<b>NUMBER OF FIRES</b>",
-    "<b>HECTARES BURNED</b>",
-    "Timestamp"
-]]
+data = response.json()
+results = data["ElectionResults"]
 
-# FULL RESPONSE
-for status in ["out_of_control", "being_held", "under_control"]:
+# Party order and display names for the CSV
+blocs = {
+    "Netanyahu-led bloc": [
+        ("Likud", "Likud"),
+        ("UTJ", "UTJ"),
+        ("Jewish Power (Otzma Yehudit)", "Jewish Power"),
+        ("SHAS", "SHAS"),
+        ("Religious Zionism", "Religious Zionism"),
+        ("People of Israel", "People of Israel"),
+    ],
+    "Opposition bloc": [
+        ("Yashar", "Yashar"),
+        ("Together (Beyachad)", "Together"),
+        ("The Democrats", "The Democrats"),
+        ("Israel Our Home (Yisrael Beiteinu)", "Israel Our Home"),
+    ],
+    "Unaligned parties": [
+        ("The Joint List", "The Joint List"),
+        ("Raam", "Ra’am"),
+        ("The Reservists", "The Reservists"),
+    ],
+}
+
+# Look up vote percentages by party
+party_lookup = {
+    row["party"]: float(row["percentage_votes"])
+    for row in results
+}
+
+rows = []
+
+for bloc_name, parties in blocs.items():
+
+    bloc_total = sum(
+        party_lookup.get(source_name, 0)
+        for source_name, display_name in parties
+    )
+
     rows.append([
-        f"{do_string(status)}",
-        count_data["full_response"]["stage_of_control"][status],
-        area_data["full_response"]["stage_of_control"][status],
-        timestamp
+        f'<b>{bloc_name} <span style="font-size:20px;">{bloc_total:.2f}%</span></b>',
+        ""
     ])
 
-# MODIFIED AND MONITORED RESPONSE
-for response_type in ["modified_response", "monitored_response"]:
-    rows.append([
-        f"{do_string(response_type)}",
-        count_data[response_type]["status"]["active"],
-        area_data[response_type]["status"]["active"],
-        timestamp
-    ])
+    for source_name, display_name in parties:
+        rows.append([
+            display_name,
+            f'{party_lookup.get(source_name, 0):.2f}%'
+        ])
+
+    rows.append(["", ""])  # blank row
 
 # CSV DATA
 csv_buffer = StringIO()
 csv.writer(csv_buffer).writerows(rows)
 csv_data = csv_buffer.getvalue()
 
-# TOTALS
-total_fires = sum(int(row[1]) for row in rows[1:])
-total_hectares = sum(float(row[2]) for row in rows[1:])
-
 # FOR CHART UPDATE
 API_TOKEN = os.environ["TOKEN"]
 URL_BASE = os.environ["URL_BASE"]
-CHART_ID = "s6yBc"
+CHART_ID = "tymgc"
 HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
 # UPDATE DATA
@@ -91,10 +91,10 @@ response.raise_for_status()
 
 # UPDATE TITLE AND TIMESTAMP
 payload = {
-    "title": f"There are currently {total_fires:,} wildfires in Canada that have burned {total_hectares:,.0f} hectares",
+    "title": f"Title",
     "metadata": {
         "describe": {
-            "intro": f"By stage of control; As of {timestamp}",
+            "intro": f"Intro",
         }
     }
 }
